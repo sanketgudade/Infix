@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlgoHelper - Expression Conversion Tools</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4a00e0;
+      --primary-light: #6a11cb;
+      --secondary-light: #2575fc;
+      --accent-color: #ff6b6b;
+      --card-background: #fff;
+      --text-color: #333;
+      --shadow-light: rgba(0, 0, 0, 0.15);
+      --shadow-dark: rgba(0, 0, 0, 0.25);
+      --content-bg: #f7f9fc;
+      --success-color: #28a745;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-light) 100%);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      padding: 30px 20px;
+      background: var(--primary-color);
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.7s;
+    }
+
+    header:hover::before {
+      left: 100%;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.8rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 1.2rem;
+      opacity: 0.9;
+      animation: fadeInUp 1s ease-out 0.3s both;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .tools-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1300px;
+      width: 100%;
+      margin: 50px auto;
+      padding: 0 20px;
+      animation: fadeIn 1s ease-out 0.6s both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .tool-card {
+      background: var(--card-background);
+      border-radius: 16px;
+      padding: 30px 25px;
+      text-align: center;
+      box-shadow: 0 8px 20px var(--shadow-light);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-light) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: -1;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 15px 30px var(--shadow-dark);
+      color: #fff;
+    }
+
+    .tool-card:hover::before {
+      opacity: 1;
+    }
+
+    .tool-card:hover .tool-icon {
+      color: #fff;
+      transform: scale(1.2) rotate(5deg);
+    }
+
+    .tool-card:hover .tool-title {
+      color: #fff;
+    }
+
+    .tool-card:hover .tool-description {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .tool-card:hover .tool-card ul li {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .tool-card:hover .tool-card ul li i {
+      color: #fff;
+    }
+
+    .card-header {
+      margin-bottom: 20px;
+    }
+
+    .tool-icon {
+      font-size: 50px;
+      color: var(--primary-color);
+      margin-bottom: 20px;
+      transition: all 0.4s ease;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .tool-title {
+      font-size: 1.6rem;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      font-weight: 600;
+      transition: color 0.4s ease;
+    }
+
+    .card-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tool-description {
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      background-color: var(--content-bg);
+      padding: 15px;
+      border-radius: 8px;
+      transition: all 0.4s ease;
+    }
+
+    .tool-card ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+      margin-top: 0;
+      flex-grow: 1;
+    }
+
+    .tool-card li {
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #444;
+      transition: color 0.4s ease;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .tool-card li i {
+      color: var(--success-color);
+      margin-right: 8px;
+      margin-top: 3px;
+      transition: color 0.4s ease;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #fff;
+      opacity: 0.8;
+      margin-top: auto;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Floating animations for cards */
+    .tool-card:nth-child(1) {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .tool-card:nth-child(2) {
+      animation: float 6s ease-in-out infinite 1.5s;
+    }
+
+    .tool-card:nth-child(3) {
+      animation: float 6s ease-in-out infinite 3s;
+    }
+
+    .tool-card:nth-child(4) {
+      animation: float 6s ease-in-out infinite 4.5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Loading animation */
+    .loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+    }
+
+    .loader.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 15px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.2rem;
+      }
+      
+      .tools-section {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+      }
+      
+      .tool-card {
+        padding: 25px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+      
+      header p {
+        font-size: 1rem;
+      }
+      
+      .tool-title {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="pageLoader">
+    <div class="spinner"></div>
+    <p>Loading AlgoHelper...</p>
+  </div>
+  
+  <header>
+    <h1>AlgoHelper</h1>
+    <p>Master expression conversion with our interactive toolkit</p>
+  </header>
+
+  <div class="tools-section">
+    <a href="infix_postfix.html" class="tool-card">
+      <div class="card-header">
+        <div class="tool-icon"><i class="fas fa-arrow-right"></i></div>
+        <div class="tool-title">Infix to Postfix</div>
+      </div>
+      <div class="card-content">
+        <p class="tool-description">
+          Learn to convert a standard **infix** expression (e.g., `A + B`) into **postfix** (e.g., `AB+`), also known as Reverse Polish Notation (RPN). This conversion is a fundamental concept in compiler design.
+        </p>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Understand operator precedence and associativity.</li>
+          <li><i class="fas fa-check-circle"></i> Learn the stack-based conversion algorithm.</li>
+          <li><i class="fas fa-check-circle"></i> Visualize the process step-by-step.</li>
+        </ul>
+      </div>
+    </a>
+    
+    <a href="infix_prefix.html" class="tool-card">
+      <div class="card-header">
+        <div class="tool-icon"><i class="fas fa-arrow-left"></i></div>
+        <div class="tool-title">Infix to Prefix</div>
+      </div>
+      <div class="card-content">
+        <p class="tool-description">
+          Convert a standard **infix** expression to **prefix** notation (e.g., `+AB`), also known as Polish Notation. This conversion is another key concept for understanding data structures and algorithms.
+        </p>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Learn the reverse-and-convert algorithm.</li>
+          <li><i class="fas fa-check-circle"></i> Handle parentheses and operator priorities.</li>
+          <li><i class="fas fa-check-circle"></i> See how the final result is reversed.</li>
+        </ul>
+      </div>
+    </a>
+    
+    <a href="evaluate_prefix.html" class="tool-card">
+      <div class="card-header">
+        <div class="tool-icon"><i class="fas fa-calculator"></i></div>
+        <div class="tool-title">Prefix Evaluation</div>
+      </div>
+      <div class="card-content">
+        <p class="tool-description">
+          Evaluate a **prefix** expression (e.g., `+ 2 3`) to find its numerical result. The evaluation process is often implemented using a stack by scanning the expression from right to left.
+        </p>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Master the right-to-left scanning technique.</li>
+          <li><i class="fas fa-check-circle"></i> Understand how the stack holds operands.</li>
+          <li><i class="fas fa-check-circle"></i> See the calculation process step-by-step.</li>
+        </ul>
+      </div>
+    </a>
+    
+    <a href="evaluate_postfix.html" class="tool-card">
+      <div class="card-header">
+        <div class="tool-icon"><i class="fas fa-calculator"></i></div>
+        <div class="tool-title">Postfix Evaluation</div>
+      </div>
+      <div class="card-content">
+        <p class="tool-description">
+          Evaluate a **postfix** expression (e.g., `2 3 +`) to compute its value. This is the most efficient method for expression evaluation and is widely used in calculators and virtual machines.
+        </p>
+        <ul>
+          <li><i class="fas fa-check-circle"></i> Master the left-to-right scanning technique.</li>
+          <li><i class="fas fa-check-circle"></i> Understand how the stack holds intermediate results.</li>
+          <li><i class="fas fa-check-circle"></i> Follow the computation steps for any expression.</li>
+        </ul>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <p>AlgoHelper &copy; 2023 - Your Algorithm Learning Companion</p>
+  </footer>
+
+  <script>
+    // Page loading animation
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        document.getElementById('pageLoader').classList.remove('active');
+      }, 1000);
+    });
+    
+    // Add click effects to cards
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('click', function(e) {
+        // Add ripple effect
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size/2;
+        const y = e.clientY - rect.top - size/2;
+        
+        ripple.style.cssText = `
+          position: absolute;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.6);
+          transform: scale(0);
+          animation: ripple 0.6s linear;
+          width: ${size}px;
+          height: ${size}px;
+          top: ${y}px;
+          left: ${x}px;
+          pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        // Remove ripple after animation
+        setTimeout(() => {
+          ripple.remove();
+        }, 600);
+      });
+    });
+    
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes ripple {
+        to {
+          transform: scale(4);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

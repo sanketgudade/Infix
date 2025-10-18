@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postfix Expression Evaluator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+       header {
+    background: #4a00e0;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center; /* vertically center logo and text */
+    justify-content: center;
+    gap: 15px; /* space between logo and text */
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f7f4fa, #3498db);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* remove margin-top, use flex centering */
+}
+
+.header-text h1 {
+    margin-bottom: 5px;
+}
+
+.header-text p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+        .header-text {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            padding: 25px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4a00e0;
+        }
+        
+        button {
+            background: #4a00e0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #3575fc;
+        }
+        
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .example-btn {
+            background: #e0e0e0;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .example-btn:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+        
+        .result-section {
+            display: flex;
+            padding: 20px;
+            background: white;
+            gap: 20px;
+        }
+        
+        .result-box {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            color: #4a00e0;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .result-content {
+            font-size: 1.4rem;
+            font-weight: 600;
+            min-height: 50px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+            color: #666;
+        }
+        
+        .placeholder {
+            color: #aaa;
+            font-style: italic;
+            font-weight: normal;
+        }
+        
+        .table-section {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4a00e0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .instructions {
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #4a00e0;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        /* Hamburger menu */
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #4a00e0;
+            margin: 2px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        
+        .algorithm-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 999;
+        }
+        
+        .algorithm-panel.active {
+            right: 0;
+        }
+        
+        .algorithm-content h2 {
+            color: #4a00e0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a00e0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-content h2 i {
+            margin-right: 10px;
+        }
+        
+        .algorithm-step {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4a00e0;
+        }
+        
+        .algorithm-step h3 {
+            color: #4a00e0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-step h3 .step-number {
+            background: #4a00e0;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .algorithm-step ol {
+            margin-left: 20px;
+        }
+        
+        .algorithm-step li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .precedence-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .precedence-table th, .precedence-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .precedence-table th {
+            background-color: #4a00e0;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4a00e0;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        .highlight {
+            background-color: #fffacd !important;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .result-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            input, button {
+                width: 100%;
+            }
+            
+            .algorithm-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .examples {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger menu button -->
+    <div class="menu-btn" id="menuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <!-- Algorithm explanation panel -->
+    <div class="algorithm-panel" id="algorithmPanel">
+        <div class="close-btn" id="closeBtn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="algorithm-content">
+            <h2><i class="fas fa-brain"></i> Evaluation Algorithm</h2>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">1</span>Algorithm Steps</h3>
+                <ol>
+                    <li>Initialize an empty stack</li>
+                    <li>Scan the postfix expression from left to right</li>
+                    <li>If the scanned token is an operand (number), push it to the stack</li>
+                    <li>If the scanned token is an operator, pop two operands from the stack</li>
+                    <li>Apply the operator to the popped operands in the correct order</li>
+                    <li>Push the result back to the stack</li>
+                    <li>After scanning, the stack should contain a single value which is the result</li>
+                </ol>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">2</span>Operator Operations</h3>
+                <p>Each operator performs a specific operation on two operands:</p>
+                <table class="precedence-table">
+                    <tr>
+                        <th>Operator</th>
+                        <th>Operation</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>+</td>
+                        <td>Addition</td>
+                        <td>a + b</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>Subtraction</td>
+                        <td>a - b</td>
+                    </tr>
+                    <tr>
+                        <td>*</td>
+                        <td>Multiplication</td>
+                        <td>a * b</td>
+                    </tr>
+                    <tr>
+                        <td>/</td>
+                        <td>Division</td>
+                        <td>a / b</td>
+                    </tr>
+                    <tr>
+                        <td>^</td>
+                        <td>Exponentiation</td>
+                        <td>a ^ b</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">3</span>Example Evaluation</h3>
+                <p><strong>Postfix:</strong> 15 7 3 - 2 * +</p>
+                <p><strong>Steps:</strong></p>
+                <ol>
+                    <li>Push 15 → Stack: [15]</li>
+                    <li>Push 7 → Stack: [15, 7]</li>
+                    <li>Push 3 → Stack: [15, 7, 3]</li>
+                    <li>Operator - → Pop 3 and 7 → 7-3=4 → Push 4 → Stack: [15, 4]</li>
+                    <li>Push 2 → Stack: [15, 4, 2]</li>
+                    <li>Operator * → Pop 2 and 4 → 4*2=8 → Push 8 → Stack: [15, 8]</li>
+                    <li>Operator + → Pop 8 and 15 → 15+8=23 → Push 23 → Stack: [23]</li>
+                </ol>
+                <p><strong>Result:</strong> 23</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header>
+    <div class="logo-container">
+        <div class="logo">
+            <img src="logo.png" alt="AlgoHelper Logo">
+        </div>
+    </div>
+    <div class="header-text">
+        <h1>Postfix Expression Evaluator</h1>
+        <p class="description">Evaluate postfix expressions with step-by-step visualization and multi-digit number support</p>
+    </div>
+</header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="postfixExpression" placeholder="Enter postfix expression with spaces (e.g., 15 7 3 - 2 * +)">
+                <button id="evaluateBtn">Evaluate</button>
+            </div>
+            
+            
+        </div>
+        
+        <div class="result-section">
+            <div class="result-box">
+                <div class="result-title">Postfix Expression</div>
+                <div class="result-content" id="postfixDisplay"><span class="placeholder">Enter expression to see result</span></div>
+            </div>
+            <div class="result-box">
+                <div class="result-title">Result</div>
+                <div class="result-content" id="resultDisplay"><span class="placeholder">Result will appear here</span></div>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            <h2>Evaluation Steps</h2>
+            <div id="messageArea"></div>
+            <table id="evaluationTable">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Token</th>
+                        <th>Stack</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #999; padding: 20px;">
+                            Evaluation steps will appear here after entering an expression
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to Use This Evaluator</h3>
+            <ul>
+                <li>Enter a valid postfix expression in the input field with spaces between tokens</li>
+                <li>Use numbers as operands and standard operators (+, -, *, /, ^)</li>
+                <li>Click the "Evaluate" button to calculate the result</li>
+                <li>The step-by-step table shows how each token is processed</li>
+                <li>Ensure your postfix expression is valid (correct number of operands and operators)</li>
+                <li>Use the example buttons to quickly test common expressions</li>
+                <li>Click the menu icon in the top-right corner for algorithm details</li>
+            </ul>
+            
+            <h4>Important Notes:</h4>
+            <ul>
+                <li><strong>Always use spaces between tokens</strong> (e.g., "15 7 +" instead of "157+")</li>
+                <li>Multi-digit numbers are supported when separated by spaces</li>
+                <li>Operators work on the last two operands in the stack</li>
+                <li>The final result should be the only value left in the stack</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Postfix Expression Evaluator Web App</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const postfixInput = document.getElementById('postfixExpression');
+            const postfixDisplay = document.getElementById('postfixDisplay');
+            const resultDisplay = document.getElementById('resultDisplay');
+            const tableBody = document.querySelector('#evaluationTable tbody');
+            const messageArea = document.getElementById('messageArea');
+            const menuBtn = document.getElementById('menuBtn');
+            const algorithmPanel = document.getElementById('algorithmPanel');
+            const closeBtn = document.getElementById('closeBtn');
+            
+            // Evaluate on button click
+            evaluateBtn.addEventListener('click', function() {
+                const postfixExpression = postfixInput.value.trim();
+                if (!postfixExpression) {
+                    showMessage('Please enter a postfix expression', 'error');
+                    return;
+                }
+                
+                evaluatePostfix(postfixExpression);
+            });
+            
+            // Toggle algorithm panel
+            menuBtn.addEventListener('click', function() {
+                algorithmPanel.classList.toggle('active');
+            });
+            
+            // Close algorithm panel
+            closeBtn.addEventListener('click', function() {
+                algorithmPanel.classList.remove('active');
+            });
+            
+            // Also evaluate when pressing Enter in the input field
+            postfixInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    evaluateBtn.click();
+                }
+            });
+            
+            // Show message function
+            function showMessage(message, type) {
+                messageArea.innerHTML = `<div class="${type === 'error' ? 'error-message' : 'success-message'}">${message}</div>`;
+            }
+            
+            // Clear message function
+            function clearMessage() {
+                messageArea.innerHTML = '';
+            }
+            
+            function evaluatePostfix(postfix) {
+                let stack = [];
+                let steps = [];
+                let stepCounter = 1;
+                
+                // Update postfix expression display
+                postfixDisplay.innerHTML = postfix;
+                
+                // Clear previous messages
+                clearMessage();
+                
+                // Tokenize the expression (split by spaces)
+                const tokens = postfix.split(/\s+/).filter(token => token !== '');
+                
+                // Add initial step
+                steps.push({
+                    step: stepCounter++,
+                    token: 'Start',
+                    stack: [...stack],
+                    action: 'Initialize empty stack'
+                });
+                
+                // Process each token in the postfix expression
+                for (let i = 0; i < tokens.length; i++) {
+                    const token = tokens[i];
+                    
+                    // If token is a number (operand), push it to stack
+                    if (/^-?\d+$/.test(token)) {
+                        stack.push(parseInt(token));
+                        
+                        steps.push({
+                            step: stepCounter++,
+                            token: token,
+                            stack: [...stack],
+                            action: `Push ${token} to stack`
+                        });
+                    }
+                    // If token is an operator
+                    else if (['+', '-', '*', '/', '^'].includes(token)) {
+                        // Check if there are enough operands
+                        if (stack.length < 2) {
+                            showMessage(`Error at step ${stepCounter}: Not enough operands for operator '${token}'`, 'error');
+                            populateTable(steps);
+                            return;
+                        }
+                        
+                        // Pop two operands
+                        const operand2 = stack.pop();
+                        const operand1 = stack.pop();
+                        
+                        // Perform the operation
+                        let result;
+                        let operation;
+                        switch (token) {
+                            case '+':
+                                result = operand1 + operand2;
+                                operation = 'addition';
+                                break;
+                            case '-':
+                                result = operand1 - operand2;
+                                operation = 'subtraction';
+                                break;
+                            case '*':
+                                result = operand1 * operand2;
+                                operation = 'multiplication';
+                                break;
+                            case '/':
+                                if (operand2 === 0) {
+                                    showMessage(`Error at step ${stepCounter}: Division by zero`, 'error');
+                                    populateTable(steps);
+                                    return;
+                                }
+                                result = operand1 / operand2;
+                                operation = 'division';
+                                break;
+                            case '^':
+                                result = Math.pow(operand1, operand2);
+                                operation = 'exponentiation';
+                                break;
+                        }
+                        
+                        // Push the result back to stack
+                        stack.push(result);
+                        
+                        steps.push({
+                            step: stepCounter++,
+                            token: token,
+                            stack: [...stack],
+                            action: `${operand1} ${token} ${operand2} = ${result} (${operation})`
+                        });
+                    } else {
+                        showMessage(`Invalid token in expression: '${token}'`, 'error');
+                        populateTable(steps);
+                        return;
+                    }
+                }
+                
+                // Check if there's exactly one value in the stack
+                if (stack.length !== 1) {
+                    showMessage(`Invalid postfix expression: ${stack.length} values remaining in stack (expected 1)`, 'error');
+                    populateTable(steps);
+                    return;
+                }
+                
+                // Update the evaluation result
+                const finalResult = stack[0];
+                resultDisplay.innerHTML = finalResult;
+                
+                // Show success message
+                showMessage(`Evaluation successful! Final result: ${finalResult}`, 'success');
+                
+                // Populate the table
+                populateTable(steps);
+            }
+            
+            function populateTable(steps) {
+                tableBody.innerHTML = '';
+                
+                steps.forEach((step, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Highlight the final step
+                    if (index === steps.length - 1) {
+                        row.classList.add('highlight');
+                    }
+                    
+                    // Step number
+                    const stepCell = document.createElement('td');
+                    stepCell.textContent = step.step;
+                    row.appendChild(stepCell);
+                    
+                    // Token
+                    const tokenCell = document.createElement('td');
+                    tokenCell.textContent = step.token;
+                    row.appendChild(tokenCell);
+                    
+                    // Stack
+                    const stackCell = document.createElement('td');
+                    stackCell.textContent = step.stack.length > 0 ? step.stack.join(', ') : 'Empty';
+                    row.appendChild(stackCell);
+                    
+                    // Action
+                    const actionCell = document.createElement('td');
+                    actionCell.textContent = step.action;
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Set example expression
+            window.setExample = function(expression) {
+                postfixInput.value = expression;
+                evaluateBtn.click();
+            };
+        });
+    </script>
+</body>
+</html>

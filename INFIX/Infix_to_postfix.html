@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infix to Postfix Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        header {
+            background: #4a00e0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+       
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            color: #4a00e0;
+            margin-right: 15px;
+        }
+        
+        .header-text {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            padding: 25px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4a00e0;
+        }
+        
+        button {
+            background: #4a00e0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #3575fc;
+        }
+        
+        .result-section {
+            display: flex;
+            padding: 20px;
+            background: white;
+        }
+        
+        .result-box {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            color: #4a00e0;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .result-content {
+            font-size: 1.4rem;
+            font-weight: 600;
+            min-height: 50px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+            color: #666;
+        }
+        
+        .placeholder {
+            color: #aaa;
+            font-style: italic;
+            font-weight: normal;
+        }
+        
+        .table-section {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4a00e0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .instructions {
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #4a00e0;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        /* Hamburger menu */
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #4a00e0;
+            margin: 2px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        
+        .algorithm-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 999;
+        }
+        
+        .algorithm-panel.active {
+            right: 0;
+        }
+        
+        .algorithm-content h2 {
+            color: #4a00e0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a00e0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-content h2 i {
+            margin-right: 10px;
+        }
+        
+        .algorithm-step {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4a00e0;
+        }
+        
+        .algorithm-step h3 {
+            color: #4a00e0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-step h3 .step-number {
+            background: #4a00e0;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .algorithm-step ol {
+            margin-left: 20px;
+        }
+        
+        .algorithm-step li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .precedence-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .precedence-table th, .precedence-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .precedence-table th {
+            background-color: #4a00e0;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4a00e0;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .result-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            input, button {
+                width: 100%;
+            }
+            
+            .algorithm-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            transition: background-color 0.3s;
+        }
+        
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .success {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .step-details {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #4a00e0;
+        }
+        
+        .current-step {
+            background-color: #e3f2fd !important;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger menu button -->
+    <div class="menu-btn" id="menuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <!-- Algorithm explanation panel -->
+    <div class="algorithm-panel" id="algorithmPanel">
+        <div class="close-btn" id="closeBtn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="algorithm-content">
+            <h2><i class="fas fa-brain"></i> Postfix Conversion Algorithm</h2>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">1</span>Stack-Based Algorithm</h3>
+                <ol>
+                    <li>Initialize an empty stack</li>
+                    <li>Scan the infix expression from left to right</li>
+                    <li>If the scanned character is an operand, add it to output</li>
+                    <li>If the scanned character is '(', push it to the stack</li>
+                    <li>If the scanned character is ')', pop from stack until '(' is encountered</li>
+                    <li>If the scanned character is an operator:
+                        <ul>
+                            <li>While stack is not empty and precedence of operator ≤ precedence of stack top</li>
+                            <li>Pop from stack and add to output</li>
+                            <li>Push the scanned operator to stack</li>
+                        </ul>
+                    </li>
+                    <li>After scanning, pop all remaining operators from stack</li>
+                </ol>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">2</span>Operator Precedence & Associativity</h3>
+                <table class="precedence-table">
+                    <tr>
+                        <th>Operator</th>
+                        <th>Precedence</th>
+                        <th>Associativity</th>
+                    </tr>
+                    <tr>
+                        <td>^ (Exponentiation)</td>
+                        <td>4 (Highest)</td>
+                        <td>Right</td>
+                    </tr>
+                    <tr>
+                        <td>*, /</td>
+                        <td>3</td>
+                        <td>Left</td>
+                    </tr>
+                    <tr>
+                        <td>+, -</td>
+                        <td>2</td>
+                        <td>Left</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">3</span>Example: A+B*C</h3>
+                <p><strong>Step 1:</strong> A → output: "A"</p>
+                <p><strong>Step 2:</strong> + → push to stack: ["+"]</p>
+                <p><strong>Step 3:</strong> B → output: "AB"</p>
+                <p><strong>Step 4:</strong> * → precedence(3) > precedence(+)=2 → push: ["+", "*"]</p>
+                <p><strong>Step 5:</strong> C → output: "ABC"</p>
+                <p><strong>Step 6:</strong> End → pop all: output becomes "ABC*+"</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">P</div>
+            </div>
+            <div class="header-text">
+                <h1>Infix to Postfix Converter</h1>
+                <p class="description">Convert infix expressions to postfix notation using stack-based algorithm</p>
+            </div>
+        </header>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="infixExpression" placeholder="Enter infix expression (e.g., A+B*C)" value="A+B*C">
+                <button id="convertBtn">Convert</button>
+            </div>
+        </div>
+        
+        <div class="result-section">
+            <div class="result-box">
+                <div class="result-title">Infix Expression</div>
+                <div class="result-content"><span class="placeholder">Enter expression to see result</span></div>
+            </div>
+            <div class="result-box">
+                <div class="result-title">Postfix Expression</div>
+                <div class="result-content"><span class="placeholder">Postfix will appear here</span></div>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            <h2>Conversion Steps</h2>
+            <div id="stepDetails"></div>
+            <table id="conversionTable">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Symbol</th>
+                        <th>Stack</th>
+                        <th>Postfix Expression</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #999; padding: 20px;">
+                            Conversion steps will appear here after entering an expression
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to Use This Converter</h3>
+            <ul>
+                <li>Enter a valid infix expression in the input field (e.g., A+B*C, (A+B)*C, A+B-C)</li>
+                <li>Click the "Convert" button to see the postfix equivalent</li>
+                <li>The step-by-step table shows the stack operations during conversion</li>
+                <li>Use alphanumeric characters for operands and standard operators (+, -, *, /, ^)</li>
+                <li>Ensure parentheses are properly balanced in your expression</li>
+                <li>Click the menu icon in the top-right corner for algorithm details</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Infix to Postfix Converter Web App</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const convertBtn = document.getElementById('convertBtn');
+            const infixInput = document.getElementById('infixExpression');
+            const infixResult = document.querySelector('.result-box:first-child .result-content');
+            const postfixResult = document.querySelector('.result-box:last-child .result-content');
+            const tableBody = document.querySelector('#conversionTable tbody');
+            const stepDetails = document.getElementById('stepDetails');
+            const menuBtn = document.getElementById('menuBtn');
+            const algorithmPanel = document.getElementById('algorithmPanel');
+            const closeBtn = document.getElementById('closeBtn');
+            
+            // Operator precedence and associativity
+            const precedence = {
+                '^': 4, // Exponentiation (right-associative)
+                '*': 3, // Multiplication (left-associative)
+                '/': 3, // Division (left-associative)
+                '+': 2, // Addition (left-associative)
+                '-': 2  // Subtraction (left-associative)
+            };
+            
+            const associativity = {
+                '^': 'right',
+                '*': 'left',
+                '/': 'left', 
+                '+': 'left',
+                '-': 'left'
+            };
+            
+            // Convert on button click
+            convertBtn.addEventListener('click', function() {
+                const infixExpression = infixInput.value.trim();
+                if (!infixExpression) {
+                    alert('Please enter an infix expression');
+                    return;
+                }
+                
+                // Validate expression
+                if (!isValidExpression(infixExpression)) {
+                    alert('Invalid expression. Please check for balanced parentheses and valid characters.');
+                    return;
+                }
+                
+                convertInfixToPostfix(infixExpression);
+            });
+            
+            // Toggle algorithm panel
+            menuBtn.addEventListener('click', function() {
+                algorithmPanel.classList.toggle('active');
+            });
+            
+            // Close algorithm panel
+            closeBtn.addEventListener('click', function() {
+                algorithmPanel.classList.remove('active');
+            });
+            
+            // Also convert when pressing Enter in the input field
+            infixInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    convertBtn.click();
+                }
+            });
+            
+            // Validate expression
+            function isValidExpression(expr) {
+                // Check for balanced parentheses
+                let balance = 0;
+                for (let char of expr) {
+                    if (char === '(') balance++;
+                    if (char === ')') balance--;
+                    if (balance < 0) return false; // More closing than opening parentheses
+                }
+                if (balance !== 0) return false; // Unbalanced parentheses
+                
+                return true;
+            }
+            
+            // Check if character is an operator
+            function isOperator(char) {
+                return ['+', '-', '*', '/', '^'].includes(char);
+            }
+            
+            // Main conversion function
+            function convertInfixToPostfix(infix) {
+                // Update infix expression display
+                infixResult.innerHTML = infix;
+                
+                // Clear previous results
+                tableBody.innerHTML = '';
+                stepDetails.innerHTML = '';
+                
+                let stack = [];
+                let postfix = '';
+                let steps = [];
+                let stepCount = 0;
+                
+                // Add initial state
+                steps.push({
+                    step: stepCount++,
+                    symbol: 'Start',
+                    stack: stack.join(''),
+                    postfix: postfix,
+                    action: 'Initialize'
+                });
+                
+                // Process each character in the infix expression
+                for (let i = 0; i < infix.length; i++) {
+                    const symbol = infix[i];
+                    
+                    // Skip spaces
+                    if (symbol === ' ') continue;
+                    
+                    let action = '';
+                    
+                    // If symbol is an operand, add it to postfix
+                    if (/[a-zA-Z0-9]/.test(symbol)) {
+                        postfix += symbol;
+                        action = 'Add operand to output';
+                    }
+                    // If symbol is '(', push it to stack
+                    else if (symbol === '(') {
+                        stack.push(symbol);
+                        action = 'Push ( to stack';
+                    }
+                    // If symbol is ')', pop from stack until '(' is found
+                    else if (symbol === ')') {
+                        action = 'Pop until ( found';
+                        while (stack.length > 0 && stack[stack.length - 1] !== '(') {
+                            postfix += stack.pop();
+                        }
+                        stack.pop(); // Remove '(' from stack
+                    }
+                    // If symbol is an operator
+                    else if (isOperator(symbol)) {
+                        action = 'Process operator';
+                        while (stack.length > 0 && 
+                               stack[stack.length - 1] !== '(' && 
+                               (precedence[stack[stack.length - 1]] > precedence[symbol] ||
+                               (precedence[stack[stack.length - 1]] === precedence[symbol] && 
+                                associativity[symbol] === 'left'))) {
+                            postfix += stack.pop();
+                        }
+                        stack.push(symbol);
+                    }
+                    
+                    // Record this step
+                    steps.push({
+                        step: stepCount++,
+                        symbol: symbol,
+                        stack: stack.join(''),
+                        postfix: postfix,
+                        action: action
+                    });
+                }
+                
+                // Pop all remaining operators from the stack
+                while (stack.length > 0) {
+                    const operator = stack.pop();
+                    postfix += operator;
+                    
+                    steps.push({
+                        step: stepCount++,
+                        symbol: '',
+                        stack: stack.join(''),
+                        postfix: postfix,
+                        action: 'Pop remaining operator'
+                    });
+                }
+                
+                // Update the postfix result
+                postfixResult.innerHTML = postfix;
+                
+                // Populate the table
+                populateTable(steps);
+                
+                // Add explanation for A+B*C example
+                if (infix === 'A+B*C') {
+                    stepDetails.innerHTML = `
+                        <div class="step-details">
+                            <h3>Step-by-step explanation for A+B*C:</h3>
+                            <p><strong>Step 1:</strong> A → output: "A"</p>
+                            <p><strong>Step 2:</strong> + → push to stack: ["+"]</p>
+                            <p><strong>Step 3:</strong> B → output: "AB"</p>
+                            <p><strong>Step 4:</strong> * → precedence(3) > precedence(+)=2 → push: ["+", "*"]</p>
+                            <p><strong>Step 5:</strong> C → output: "ABC"</p>
+                            <p><strong>Step 6:</strong> End → pop all: output becomes "ABC*+"</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Add steps to the conversion table
+            function populateTable(steps) {
+                steps.forEach((step, index) => {
+                    const row = document.createElement('tr');
+                    
+                    // Highlight the final result row
+                    if (index === steps.length - 1) {
+                        row.classList.add('highlight');
+                    }
+                    
+                    // Step number
+                    const stepCell = document.createElement('td');
+                    stepCell.textContent = step.step;
+                    row.appendChild(stepCell);
+                    
+                    // Symbol
+                    const symbolCell = document.createElement('td');
+                    symbolCell.textContent = step.symbol;
+                    row.appendChild(symbolCell);
+                    
+                    // Stack
+                    const stackCell = document.createElement('td');
+                    stackCell.textContent = step.stack || '-';
+                    row.appendChild(stackCell);
+                    
+                    // Postfix expression
+                    const postfixCell = document.createElement('td');
+                    postfixCell.textContent = step.postfix || '-';
+                    row.appendChild(postfixCell);
+                    
+                    // Action
+                    const actionCell = document.createElement('td');
+                    actionCell.textContent = step.action;
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

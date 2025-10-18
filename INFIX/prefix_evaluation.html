@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prefix Expression Evaluator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+          header {
+    background: #4a00e0;
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center; /* vertically center logo and text */
+    justify-content: center;
+    gap: 15px; /* space between logo and text */
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f7f4fa, #3498db);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    padding: 4px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* remove margin-top, use flex centering */
+}
+
+.header-text h1 {
+    margin-bottom: 5px;
+}
+
+.header-text p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    }
+
+        .header-text {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .input-section {
+            padding: 25px;
+            background: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #4a00e0;
+        }
+        
+        button {
+            background: #4a00e0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #3575fc;
+        }
+        
+        .result-section {
+            display: flex;
+            padding: 20px;
+            background: white;
+        }
+        
+        .result-box {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            color: #4a00e0;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .result-content {
+            font-size: 1.4rem;
+            font-weight: 600;
+            min-height: 50px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-all;
+            color: #666;
+        }
+        
+        .placeholder {
+            color: #aaa;
+            font-style: italic;
+            font-weight: normal;
+        }
+        
+        .table-section {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4a00e0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+        
+        .instructions {
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #4a00e0;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        /* Hamburger menu */
+        .menu-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        
+        .menu-btn span {
+            display: block;
+            width: 25px;
+            height: 3px;
+            background: #4a00e0;
+            margin: 2px 0;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+        
+        .algorithm-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            padding: 80px 20px 20px;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 999;
+        }
+        
+        .algorithm-panel.active {
+            right: 0;
+        }
+        
+        .algorithm-content h2 {
+            color: #4a00e0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a00e0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-content h2 i {
+            margin-right: 10px;
+        }
+        
+        .algorithm-step {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4a00e0;
+        }
+        
+        .algorithm-step h3 {
+            color: #4a00e0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .algorithm-step h3 .step-number {
+            background: #4a00e0;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .algorithm-step ol {
+            margin-left: 20px;
+        }
+        
+        .algorithm-step li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .precedence-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .precedence-table th, .precedence-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        
+        .precedence-table th {
+            background-color: #4a00e0;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #4a00e0;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: white;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .result-section {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            input, button {
+                width: 100%;
+            }
+            
+            .algorithm-panel {
+                width: 100%;
+                right: -100%;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hamburger menu button -->
+    <div class="menu-btn" id="menuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
+    <!-- Algorithm explanation panel -->
+    <div class="algorithm-panel" id="algorithmPanel">
+        <div class="close-btn" id="closeBtn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="algorithm-content">
+            <h2><i class="fas fa-brain"></i> Evaluation Algorithm</h2>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">1</span>Algorithm Steps</h3>
+                <ol>
+                    <li>Read the prefix expression from right to left</li>
+                    <li>If the symbol is an operand, push it onto the stack</li>
+                    <li>If the symbol is an operator, pop two operands from the stack</li>
+                    <li>Perform the operation on the popped operands</li>
+                    <li>Push the result back onto the stack</li>
+                    <li>Repeat until the entire expression is scanned</li>
+                    <li>The final result will be the only value remaining in the stack</li>
+                </ol>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">2</span>Operator Precedence</h3>
+                <p>In prefix notation, operators come before their operands, so precedence is handled by the order of operations:</p>
+                <table class="precedence-table">
+                    <tr>
+                        <th>Operator</th>
+                        <th>Operation</th>
+                        <th>Example</th>
+                    </tr>
+                    <tr>
+                        <td>+</td>
+                        <td>Addition</td>
+                        <td>+ 3 4 → 7</td>
+                    </tr>
+                    <tr>
+                        <td>-</td>
+                        <td>Subtraction</td>
+                        <td>- 5 2 → 3</td>
+                    </tr>
+                    <tr>
+                        <td>*</td>
+                        <td>Multiplication</td>
+                        <td>* 3 4 → 12</td>
+                    </tr>
+                    <tr>
+                        <td>/</td>
+                        <td>Division</td>
+                        <td>/ 8 2 → 4</td>
+                    </tr>
+                    <tr>
+                        <td>^</td>
+                        <td>Exponentiation</td>
+                        <td>^ 2 3 → 8</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="algorithm-step">
+                <h3><span class="step-number">3</span>Example Evaluation</h3>
+                <p><strong>Prefix:</strong> - * 2 3 + 4 5</p>
+                <p><strong>Step-by-step:</strong></p>
+                <ol>
+                    <li>Read from right: 5 → push to stack</li>
+                    <li>4 → push to stack</li>
+                    <li>+ → pop 4 and 5, compute 4+5=9, push 9</li>
+                    <li>3 → push to stack</li>
+                    <li>2 → push to stack</li>
+                    <li>* → pop 2 and 3, compute 2*3=6, push 6</li>
+                    <li>- → pop 6 and 9, compute 6-9=-3</li>
+                </ol>
+                <p><strong>Result:</strong> -3</p>
+            </div>
+        </div>
+    </div>
+    
+   
+    <div class="container">
+        <header>
+    <div class="logo-container">
+        <div class="logo">
+            <img src="logo.png" alt="AlgoHelper Logo">
+        </div>
+    </div>
+    <div class="header-text">
+        <h1>Prefix Expression Evaluator</h1>
+        <p class="description">Evaluate postfix expressions with step-by-step visualization and multi-digit number support</p>
+    </div>
+</header>
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="prefixExpression" placeholder="Enter prefix expression With Spaces!!!(e.g., * + 3 4 - 7 2)">
+                <button id="evaluateBtn">Evaluate</button>
+            </div>
+        </div>
+        
+        <div class="result-section">
+            <div class="result-box">
+                <div class="result-title">Prefix Expression</div>
+                <div class="result-content"><span class="placeholder">Enter expression to see result</span></div>
+            </div>
+            <div class="result-box">
+                <div class="result-title">Result</div>
+                <div class="result-content"><span class="placeholder">Result will appear here</span></div>
+            </div>
+        </div>
+        
+        <div class="table-section">
+            <h2>Evaluation Steps</h2>
+            <table id="evaluationTable">
+                <thead>
+                    <tr>
+                        <th>Step</th>
+                        <th>Symbol</th>
+                        <th>Stack</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #999; padding: 20px;">
+                            Evaluation steps will appear here after entering an expression
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to Use This Evaluator</h3>
+            <ul>
+                <li>Enter a valid prefix expression in the input field With spaces(e.g., * + 3 4 - 7 2)</li>
+                <li>Click the "Evaluate" button to calculate the result</li>
+                <li>The step-by-step table shows how each symbol is processed</li>
+                <li>Use numeric values for operands and standard operators (+, -, *, /, ^)</li>
+                <li>Ensure the expression is properly formatted in prefix notation</li>
+                <li>Click the menu icon in the top-right corner for algorithm details</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Prefix Expression Evaluator Web App</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const prefixInput = document.getElementById('prefixExpression');
+            const prefixResult = document.querySelector('.result-box:first-child .result-content');
+            const evaluationResult = document.querySelector('.result-box:last-child .result-content');
+            const tableBody = document.querySelector('#evaluationTable tbody');
+            const menuBtn = document.getElementById('menuBtn');
+            const algorithmPanel = document.getElementById('algorithmPanel');
+            const closeBtn = document.getElementById('closeBtn');
+            
+            // Evaluate on button click
+            evaluateBtn.addEventListener('click', function() {
+                const prefixExpression = prefixInput.value.trim();
+                if (!prefixExpression) {
+                    alert('Please enter a prefix expression');
+                    return;
+                }
+                
+                evaluatePrefixExpression(prefixExpression);
+            });
+            
+            // Toggle algorithm panel
+            menuBtn.addEventListener('click', function() {
+                algorithmPanel.classList.toggle('active');
+            });
+            
+            // Close algorithm panel
+            closeBtn.addEventListener('click', function() {
+                algorithmPanel.classList.remove('active');
+            });
+            
+            // Also evaluate when pressing Enter in the input field
+            prefixInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    evaluateBtn.click();
+                }
+            });
+            
+            function evaluatePrefixExpression(prefix) {
+                let stack = [];
+                let steps = [];
+                let stepCounter = 0;
+                
+                // Update prefix expression display
+                prefixResult.innerHTML = prefix;
+                
+                // Split the expression into tokens
+                const tokens = prefix.split(/\s+/).filter(token => token !== '');
+                
+                // Process tokens from right to left
+                for (let i = tokens.length - 1; i >= 0; i--) {
+                    const token = tokens[i];
+                    stepCounter++;
+                    
+                    // If token is an operand (number), push to stack
+                    if (!isNaN(token)) {
+                        stack.push(parseFloat(token));
+                        steps.push({
+                            step: stepCounter,
+                            symbol: token,
+                            stack: [...stack].join(', '),
+                            action: 'Push operand to stack'
+                        });
+                    }
+                    // If token is an operator
+                    else if (['+', '-', '*', '/', '^'].includes(token)) {
+                        // Check if there are enough operands
+                        if (stack.length < 2) {
+                            alert('Invalid prefix expression: not enough operands for operator ' + token);
+                            return;
+                        }
+                        
+                        // Pop two operands
+                        const operand1 = stack.pop();
+                        const operand2 = stack.pop();
+                        
+                        // Perform the operation
+                        let result;
+                        switch (token) {
+                            case '+':
+                                result = operand1 + operand2;
+                                break;
+                            case '-':
+                                result = operand1 - operand2;
+                                break;
+                            case '*':
+                                result = operand1 * operand2;
+                                break;
+                            case '/':
+                                if (operand2 === 0) {
+                                    alert('Division by zero error');
+                                    return;
+                                }
+                                result = operand1 / operand2;
+                                break;
+                            case '^':
+                                result = Math.pow(operand1, operand2);
+                                break;
+                            default:
+                                alert('Unsupported operator: ' + token);
+                                return;
+                        }
+                        
+                        // Push the result back to stack
+                        stack.push(result);
+                        
+                        steps.push({
+                            step: stepCounter,
+                            symbol: token,
+                            stack: [...stack].join(', '),
+                            action: `${operand1} ${token} ${operand2} = ${result}`
+                        });
+                    }
+                    else {
+                        alert('Invalid token in expression: ' + token);
+                        return;
+                    }
+                }
+                
+                // After processing all tokens, there should be exactly one value in the stack
+                if (stack.length !== 1) {
+                    alert('Invalid prefix expression');
+                    return;
+                }
+                
+                // Update the result
+                evaluationResult.innerHTML = stack[0];
+                
+                // Populate the table
+                populateTable(steps);
+            }
+            
+            function populateTable(steps) {
+                // Clear the table
+                tableBody.innerHTML = '';
+                
+                // Add each step to the table
+                steps.forEach(step => {
+                    const row = document.createElement('tr');
+                    
+                    // Step number
+                    const stepCell = document.createElement('td');
+                    stepCell.textContent = step.step;
+                    row.appendChild(stepCell);
+                    
+                    // Symbol
+                    const symbolCell = document.createElement('td');
+                    symbolCell.textContent = step.symbol;
+                    row.appendChild(symbolCell);
+                    
+                    // Stack
+                    const stackCell = document.createElement('td');
+                    stackCell.textContent = step.stack;
+                    row.appendChild(stackCell);
+                    
+                    // Action
+                    const actionCell = document.createElement('td');
+                    actionCell.textContent = step.action;
+                    row.appendChild(actionCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
